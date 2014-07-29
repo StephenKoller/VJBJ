@@ -19,7 +19,7 @@ Game.prototype.dealCard = function(player){
 }
 
 Game.prototype.shuffleCards = function(){
-  // Found this nice Fisher-Yates shuffle algo at http://bost.ocks.org/mike/shuffle/
+  // Found this nice Fisher-Yates shuffle algorithm at http://bost.ocks.org/mike/shuffle/
   var deck = this.deck;
   var unshuffled = deck.length,
     currentCard,
