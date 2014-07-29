@@ -1,0 +1,51 @@
+<!DOCTYPE=html>
+<head>
+  <title>Blackjack</title>
+  <link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+
+  <button id="shuffle">Shuffle Cards</button>
+
+  <div id="deck">
+
+  </div>
+
+  <script type="text/javascript" src="../js/blackjack.js"></script>
+  <script type="text/javascript">
+
+    var createDeckOnScreen = function(){
+      // To create the deck on screen, first we get the empty 'deck' element
+      var deckOnScreen = document.getElementById("deck");
+
+      // Make sure the deck is empty first
+      while (deckOnScreen.firstChild) {
+        deckOnScreen.removeChild(deckOnScreen.firstChild);
+      }
+
+      // Then loop over the elements in game.deck and generate card elements
+      for(var i = 0; i < 52; i++){
+        var card = document.createElement("div");
+        card.className = "card";
+        card.id = game.deck[i];
+        card.style.backgroundImage = "url(../img/cards/" + game.deck[i] + ".png)";
+        deckOnScreen.appendChild(card);
+      }
+    }
+
+    // Initialize the game and one player, then build the deck
+    var game = new Game();
+    var player1 = new Player();
+    createDeckOnScreen();
+
+    /*Set up event listener for shuffle button*/
+    var shuffleButton = document.getElementById("shuffle");
+
+    shuffleButton.addEventListener('click', function() {
+      game.shuffleCards();
+      createDeckOnScreen();
+    }, false);
+  </script>
+
+</body>
+</html>

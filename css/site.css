@@ -1,0 +1,9 @@
+.card{
+  display:block;
+  float:left;
+  width:83px;
+  height:121px;
+  background-color:#ccc;
+  background-size:cover;
+  margin:5px;
+}
