@@ -12,7 +12,7 @@ describe("Game", function() {
   });
 
   describe("when dealing cards it", function(){
-    it("should deal each card at least once if dealing a full deck", function(){
+    it("should deal each card only once if dealing a full deck", function(){
       for(var i = 0; i < 52; i++){
         game.dealCard(player1);
       }
@@ -39,6 +39,10 @@ describe("Game", function() {
 
       // I know this is a brittle test, but I'm not sure how to make it better
       expect(all_cards_shuffled).toBe(true);
+    });
+
+    it("should do x", function(){
+      
     });
   });
 

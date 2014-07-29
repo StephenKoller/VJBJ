@@ -23,12 +23,17 @@
         deckOnScreen.removeChild(deckOnScreen.firstChild);
       }
 
+      var cardBack = document.createElement("div");
+      cardBack.className = "card";
+      cardBack.id = "back";
+      deckOnScreen.appendChild(cardBack);
+
       // Then loop over the elements in game.deck and generate card elements
       for(var i = 0; i < 52; i++){
         var card = document.createElement("div");
         card.className = "card";
-        card.id = game.deck[i];
-        card.style.backgroundImage = "url(../img/cards/" + game.deck[i] + ".png)";
+        card.id = game.deck[i].name;
+        card.style.backgroundImage = "url(../img/cards/" + game.deck[i].name + ".png)";
         deckOnScreen.appendChild(card);
       }
     }

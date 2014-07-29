@@ -4,17 +4,23 @@ function Player(){
 }
 
 function Game(){
-  this.deck = [
-    "AS","2S","3S","4S","5S","6S","7S","8S","9S","10S","JS","QS","KS",
-    "AH","2H","3H","4H","5H","6H","7H","8H","9H","10H","JH","QH","KH",
-    "AC","2C","3C","4C","5C","6C","7C","8C","9C","10C","JC","QC","KC",
-    "AD","2D","3D","4D","5D","6D","7D","8D","9D","10D","JD","QD","KD"
-  ];
+  var values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+  var suits = ["S", "H", "C", "D"];
+  this.deck = [];
+
+  for(suit in suits){
+    for(value in values){
+      var tmpCard = { "name" : values[value] + suits[suit], "value" : parseInt(value) + 1 };
+      this.deck.push(tmpCard);
+    }
+  }
 }
 
-Game.prototype.dealCard = function(player){
-  var card = this.deck.pop();
-  player.cards.push(card);
+Game.prototype.dealCard = function(player, count){
+  for(var i = 0; i < count; i++){
+    var card = this.deck.pop();
+    player.cards.push(card);
+  }
   return;
 }
 
@@ -38,4 +44,12 @@ Game.prototype.shuffleCards = function(){
   }
 
   this.deck = deck;
+}
+
+Game.prototype.checkScore = function(player){
+  var total = 0;
+  for(card in player.cards){
+    total += player.cards[card].value;
+  }
+  return total;
 }
