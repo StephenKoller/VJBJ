@@ -1,14 +1,10 @@
-#back{
+#hiddenCard{
   background-image:url('../img/cards/back.png');
-  
 }
 
 #dealer, #player{
   display:block;
-}
-
-#score{
-  float:right;
+  margin-bottom:20px;
 }
 
 .blank{
@@ -21,6 +17,10 @@
   width:83px;
   height:121px;
   background-size:cover;
-  margin:5px;
+  margin:0 0 0 -50px;
   border-radius:5px;
+}
+
+.card:nth-of-type(1){
+  margin-left:5px;
 }

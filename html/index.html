@@ -2,32 +2,59 @@
 <head>
   <title>Blackjack</title>
   <link rel="stylesheet" href="../css/site.css">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
 </head>
 <body>
-  <button id="newGameButton">New Game</button>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <button id="newGameButton" class="btn btn-default">New Game</button>
+      </div>
+    </div>
 
-  <button id="hitMeButton">Hit Me</button>
-  <button id="stayButton">Stay</button>
+    <div class="row">
+      <div class="col-md-12">
+        <h2 id="dealerHandValue"></h2>
+      </div>
+    </div>
 
-  <div id="score"></div>
+    <div class="row">
+      <div class="col-md-12">
+        <div id="dealer">
+          <div id="empty" class="card"></div>
+          <div id="hiddenCard" class="card"></div>
+        </div>
+      </div>
+    </div>
 
-  <div id="dealer">
-    <p>Dealer</p>
-    <div id="back" class="card"></div>
-    <div id="empty" class="card"></div>
-  </div>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <div id="player">
-    <p>Player</p>
-    <div id="back" class="card"></div>
-    <div id="empty" class="card"></div>
+    <div class="row">
+      <div class="col-md-12">
+        <div id="player">
+          <div id="empty" class="card"></div>
+          <div id="empty" class="card"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <h2 id="playerHandValue"></h2>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <button id="hitMeButton" class="btn btn-default">Hit</button>
+        <button id="standButton"  class="btn btn-default">Stand</button>
+      </div>
+    </div>
+
+    <!-- <div class="row">
+      <div class="col-md-12">
+        <button id="bet10" class="btn btn-default">Bet 10</button>
+      </div>
+    </div>
+     -->
   </div>
 
   <script type="text/javascript" src="../js/blackjack.js"></script>
@@ -38,77 +65,161 @@
     var game = new Game();
     var player = new Player();
     var dealer = new Player();
+    player.name = "player";
+    dealer.name = "dealer";
 
     var playerCardsOnScreen = document.getElementById("player");
+    var dealerCardsOnScreen = document.getElementById("dealer");
 
     /*Set up event listeners for buttons*/
     var newGameButton = document.getElementById("newGameButton");
     var hitMeButton = document.getElementById("hitMeButton");
-    var stayButton = document.getElementById("stayButton");
+    var standButton = document.getElementById("standButton");
 
     newGameButton.addEventListener('click', function() {
-      startNewGame();
+      runGame();
     }, false);
 
     hitMeButton.addEventListener('click', function() {
       hitMe();
     }, false);
 
-    stayButton.addEventListener('click', function() {
-      alert('you stayed');
+    standButton.addEventListener('click', function() {
+      stand();
     }, false);
 
-    // Game functions that should probably go in the other file.
-    function startNewGame(){
-      // Initialize the game and one player, then build the deck
+    function alertIfTwentyOne(){
+      if(player.totalScore > 21){
+        console.log("Busted! You're over 21!");
 
-      var score = document.getElementById("score");
-      score.innerHTML = player.score;
+        hitMeButton.disabled = "disabled";
+        standButton.disabled = "disabled";
+
+        var dealerCard = document.getElementById("dealer").getElementsByClassName("card")[1];
+        dealerCard.id = dealer.cards[1].name;
+        setBackgroundImage(dealerCard, dealer.cards[1].name);
+
+      } else if(dealer.totalScore > 21){
+        console.log("Dealer loses! You win!");
+
+        hitMeButton.disabled = "disabled";
+        standButton.disabled = "disabled";
+
+        var dealerCard = document.getElementById("dealer").getElementsByClassName("card")[1];
+        dealerCard.id = dealer.cards[1].name;
+        setBackgroundImage(dealerCard, dealer.cards[1].name);
+      }
+    };
+
+    function updateHandValue(player){
+      var hand = document.getElementById(player.name + "HandValue");
+      hand.innerHTML = player.totalScore;
+    }
+
+    function initializeGame(){
+      // Enable buttons
+      hitMeButton.disabled = "";
+      standButton.disabled = "";
+
+      // Reset players' hands in DOM to empty
+      playerCardsOnScreen.innerHTML = "<div id='empty' class='card'></div><div id='empty' class='card'></div>";
+      dealerCardsOnScreen.innerHTML = "<div id='empty' class='card'></div><div id='hiddenCard' class='card'></div>";
 
       game.shuffleCards();
+
+      // Reset the players' hands
       player.cards = [];
       dealer.cards = [];
 
-      game.dealCard(player, 2);
-      game.dealCard(dealer, 2);
+      document.getElementById("playerHandValue").innerHTML = "";
+      document.getElementById("dealerHandValue").innerHTML = "";
+    }
 
+    // Game functions that should probably go in the other file.
+    function runGame(){
+      initializeGame();
+
+      // Deal 2 cards to each player
+      game.dealCard(player,2);
+      game.dealCard(dealer,2);
+
+      // Update DOM to match dealt cards
       for(var index in player.cards){
         var card = player.cards[index];
         var cardBox = playerCardsOnScreen.getElementsByTagName("div")[index];
         cardBox.id = card.name;
-        cardBox.style.backgroundImage = "url(../img/cards/" + card.name + ".png)";
+        setBackgroundImage(cardBox, card.name);
       }
 
+      var dealerCard = document.getElementById("dealer").getElementsByClassName("card")[0];
+      dealerCard.id = dealer.cards[0].name;
+      setBackgroundImage(dealerCard, dealer.cards[0].name);
+
+      game.calculateScore(player);
+      updateHandValue(player);
+
       setTimeout(function(){
-        var playerScore = game.checkScore(player);
-        var dealerScore = game.checkScore(dealer);
-
-        if(playerScore > 21){
-          alert("Busted! You're over 21!");
-        } else if(dealerScore > 21){
-          alert("Dealer loses! You win!");
-        }
-      }, 300);
-
-
+        alertIfTwentyOne();
+      }, 200);
     }
 
+    // When player presses "Hit Me" button...
     function hitMe(){
       game.dealCard(player, 1);
-      var card = player.cards[player.cards.length-1];
+
+      // Create a new DOM element
       var newCard = document.createElement("div");
-      newCard.className = "card";
+
+      // Find the name of the new card that has been dealt and add it to the DOM element
+      var card = player.cards[player.cards.length-1];
       newCard.id = card.name;
-      newCard.style.backgroundImage = "url(../img/cards/" + card.name + ".png)";
+
+      // Set the styling
+      newCard.className = "card";
+      setBackgroundImage(newCard, card.name);
+
+      // Add new element to the DOM
       playerCardsOnScreen.appendChild(newCard);
 
+      game.calculateScore(player);
+      updateHandValue(player);
+
+      // Use a timeout to let the card images render before checking score
       setTimeout(function(){
-        game.checkScore(player);
-        game.checkScore(dealer);
-      }, 300);
+        alertIfTwentyOne();
+      }, 100);
     }
 
-    startNewGame();
+    function stand(){
+      // First show the second card the dealer already has in their hand
+      var dealerCardsOnScreen = document.getElementById("dealer");
+
+      var dealerCard = dealerCardsOnScreen.getElementsByClassName("card")[1];
+      dealerCard.id = dealer.cards[1].name;
+      setBackgroundImage(dealerCard, dealer.cards[1].name);
+
+      // Then while the dealer's score is less than 17, keep dealing cards and displaying them
+      var i = 2;
+      while(game.calculateScore(dealer) < 17){
+        game.dealCard(dealer,1);
+        var newCard = document.createElement("div");
+        newCard.id = dealer.cards[i].name;
+        newCard.className = "card";
+        setBackgroundImage(newCard, dealer.cards[i].name);
+        dealerCardsOnScreen.appendChild(newCard);
+        i++;
+      }
+
+      updateHandValue(dealer);
+
+      return;
+    }
+
+    function setBackgroundImage(cardElement, cardName){
+      cardElement.style.backgroundImage = "url(../img/cards/" + cardName + ".png)";
+    }
+
+    runGame();
 
   </script>
 

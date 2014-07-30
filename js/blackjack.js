@@ -1,16 +1,21 @@
 function Player(){
-  this.score = 100;
+  this.money = 100;
+  this.totalScore = 0;
   this.cards = [];
 }
 
 function Game(){
+  // Set up the card deck
   var values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
   var suits = ["S", "H", "C", "D"];
   this.deck = [];
 
+  // The Math.min function here sets everything 10 or greater to just 10,
+  // ensuring face cards always have a value of 10.
+
   for(suit in suits){
     for(value in values){
-      var tmpCard = { "name" : values[value] + suits[suit], "value" : parseInt(value) + 1 };
+      var tmpCard = { "name" : values[value] + suits[suit], "value" : Math.min(10, parseInt(value)+1) };
       this.deck.push(tmpCard);
     }
   }
@@ -21,6 +26,7 @@ Game.prototype.dealCard = function(player, count){
     var card = this.deck.pop();
     player.cards.push(card);
   }
+
   return;
 }
 
@@ -46,10 +52,19 @@ Game.prototype.shuffleCards = function(){
   this.deck = deck;
 }
 
-Game.prototype.checkScore = function(player){
-  var total = 0;
+Game.prototype.calculateScore = function(player){
+
+  // Reset the score to count again
+  player.totalScore = 0;
+
+  // Add the value of each card in the injected player's hand
   for(card in player.cards){
-    total += player.cards[card].value;
+    // If the card is an ace, and if the total of all cards in their hand is under/at 21
+    if(player.cards[card].name.substring(0,1) === "A" && player.totalScore+11 <= 21){
+      // set the ace's value to 11
+      player.cards[card].value = 11;
+    }
+    player.totalScore += player.cards[card].value;
   }
-  return total;
+  return player.totalScore;
 }
