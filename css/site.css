@@ -7,6 +7,26 @@
   margin-bottom:20px;
 }
 
+#bet5{
+  background-color:red;
+  color:white;
+}
+
+#bet10{
+  background-color:blue;
+  color:white;
+}
+
+#bet25{
+  background-color:green;
+  color:white;
+}
+
+#bet100{
+  background-color:black;
+  color:white;
+}
+
 .blank{
   border:1px dashed #666;
 }
