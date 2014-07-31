@@ -1,14 +1,18 @@
 <!DOCTYPE=html>
 <head>
-  <title>Blackjack</title>
+  <title>Le Blackjack</title>
   <link rel="stylesheet" href="../css/site.css">
   <link rel="stylesheet" href="../css/bootstrap.min.css">
 </head>
 <body>
-  <div class="container">
+  <div class="container text-center">
+
+    <!-- <div class="alert alert-success fade" role="alert">You win!</div>
+    <div class="alert alert-danger fade" role="alert">You lose. :(</div> -->
+
     <div class="row">
       <div class="col-md-12">
-        <button id="newGameButton" class="btn btn-default">New Game</button>
+        <h1 id="gameStatus"></h1>
       </div>
     </div>
 
@@ -19,16 +23,16 @@
     </div>
 
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-xs-6 col-xs-offset-5">
         <div id="dealer">
           <div id="empty" class="card"></div>
           <div id="hiddenCard" class="card"></div>
         </div>
       </div>
     </div>
-
+    <br>
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-xs-6 col-xs-offset-5">
         <div id="player">
           <div id="empty" class="card"></div>
           <div id="empty" class="card"></div>
@@ -44,43 +48,33 @@
 
     <div class="row">
       <div class="col-md-12">
-        <button id="hitMeButton" class="btn btn-default">Hit</button>
+        <button id="dealButton" class="btn btn-default">Deal</button>
+        <button id="hitButton" class="btn btn-default">Hit</button>
         <button id="standButton"  class="btn btn-default">Stand</button>
       </div>
     </div>
 
-    <!-- <div class="row">
-      <div class="col-md-12">
-        <button id="bet10" class="btn btn-default">Bet 10</button>
-      </div>
-    </div>
-     -->
   </div>
 
   <script type="text/javascript" src="../js/blackjack.js"></script>
   <script type="text/javascript">
     // I kept this out of the blackjack.js file to separate the view from the controller,
-    // and to make testing easier
+    // and to make testing easier (?)
 
     var game = new Game();
-    var player = new Player();
-    var dealer = new Player();
-    player.name = "player";
-    dealer.name = "dealer";
+    var player = new Player("player");
+    var dealer = new Player("dealer");
 
     var playerCardsOnScreen = document.getElementById("player");
     var dealerCardsOnScreen = document.getElementById("dealer");
+    var gameStatus = document.getElementById("gameStatus");
 
     /*Set up event listeners for buttons*/
-    var newGameButton = document.getElementById("newGameButton");
-    var hitMeButton = document.getElementById("hitMeButton");
+    var hitButton = document.getElementById("hitButton");
     var standButton = document.getElementById("standButton");
+    var dealButton = document.getElementById("dealButton");
 
-    newGameButton.addEventListener('click', function() {
-      runGame();
-    }, false);
-
-    hitMeButton.addEventListener('click', function() {
+    hitButton.addEventListener('click', function() {
       hitMe();
     }, false);
 
@@ -88,44 +82,20 @@
       stand();
     }, false);
 
-    function alertIfTwentyOne(){
-      if(player.totalScore > 21){
-        console.log("Busted! You're over 21!");
-
-        hitMeButton.disabled = "disabled";
-        standButton.disabled = "disabled";
-
-        var dealerCard = document.getElementById("dealer").getElementsByClassName("card")[1];
-        dealerCard.id = dealer.cards[1].name;
-        setBackgroundImage(dealerCard, dealer.cards[1].name);
-
-      } else if(dealer.totalScore > 21){
-        console.log("Dealer loses! You win!");
-
-        hitMeButton.disabled = "disabled";
-        standButton.disabled = "disabled";
-
-        var dealerCard = document.getElementById("dealer").getElementsByClassName("card")[1];
-        dealerCard.id = dealer.cards[1].name;
-        setBackgroundImage(dealerCard, dealer.cards[1].name);
-      }
-    };
-
-    function updateHandValue(player){
-      var hand = document.getElementById(player.name + "HandValue");
-      hand.innerHTML = player.totalScore;
-    }
+    dealButton.addEventListener('click', function() {
+      game = new Game();
+      game.shuffleCards();
+      runGame();
+    }, false);
 
     function initializeGame(){
-      // Enable buttons
-      hitMeButton.disabled = "";
+      // Hide buttons
+      hitButton.disabled = "";
       standButton.disabled = "";
 
       // Reset players' hands in DOM to empty
       playerCardsOnScreen.innerHTML = "<div id='empty' class='card'></div><div id='empty' class='card'></div>";
       dealerCardsOnScreen.innerHTML = "<div id='empty' class='card'></div><div id='hiddenCard' class='card'></div>";
-
-      game.shuffleCards();
 
       // Reset the players' hands
       player.cards = [];
@@ -133,9 +103,12 @@
 
       document.getElementById("playerHandValue").innerHTML = "";
       document.getElementById("dealerHandValue").innerHTML = "";
+
+      gameStatus.innerHTML = "";
+
     }
 
-    // Game functions that should probably go in the other file.
+    // Game functions that should maybe (?) go in the other file.
     function runGame(){
       initializeGame();
 
@@ -144,9 +117,9 @@
       game.dealCard(dealer,2);
 
       // Update DOM to match dealt cards
-      for(var index in player.cards){
-        var card = player.cards[index];
-        var cardBox = playerCardsOnScreen.getElementsByTagName("div")[index];
+      for(var i in player.cards){
+        var card = player.cards[i];
+        var cardBox = playerCardsOnScreen.getElementsByTagName("div")[i];
         cardBox.id = card.name;
         setBackgroundImage(cardBox, card.name);
       }
@@ -155,11 +128,13 @@
       dealerCard.id = dealer.cards[0].name;
       setBackgroundImage(dealerCard, dealer.cards[0].name);
 
+      // Update display for score of cards currently held by player
       game.calculateScore(player);
       updateHandValue(player);
 
+      // Allow card images to render, then check if the player has already reached 21
       setTimeout(function(){
-        alertIfTwentyOne();
+        initialScore();
       }, 200);
     }
 
@@ -186,7 +161,7 @@
 
       // Use a timeout to let the card images render before checking score
       setTimeout(function(){
-        alertIfTwentyOne();
+        initialScore();
       }, 100);
     }
 
@@ -212,13 +187,59 @@
 
       updateHandValue(dealer);
 
-      return;
+      finalScore();
     }
+
+    function finalScore(){
+      if(game.calculateScore(dealer) > 21){
+        gameStatus.innerHTML = "You win, dealer busts!";
+      } else if (game.calculateScore(dealer) === 21 ){
+        gameStatus.innerHTML = "Dealer wins!";
+      } else if(game.calculateScore(player) === 21){
+        gameStatus.innerHTML = "21, you win!";
+      } else if (game.calculateScore(player) > game.calculateScore(dealer)){
+        gameStatus.innerHTML = "You win!";
+      } else if (game.calculateScore(player) <= game.calculateScore(dealer)){
+        gameStatus.innerHTML = "You lose!";
+      }
+
+      endGame();
+    }
+
+    function initialScore(){
+      if(game.calculateScore(player) > 21){
+        gameStatus.innerHTML = "Busted! You're over 21!";
+        endGame();
+      }
+
+      if(game.calculateScore(dealer) > 21){
+        gameStatus.innerHTML = "Dealer loses! You win!";
+        endGame();
+      }
+
+    };
 
     function setBackgroundImage(cardElement, cardName){
       cardElement.style.backgroundImage = "url(../img/cards/" + cardName + ".png)";
     }
 
+    function updateHandValue(player){
+      var hand = document.getElementById(player.name + "HandValue");
+      hand.innerHTML = game.calculateScore(player);
+    }
+
+    function endGame(){
+      // Disable hit and stand buttons
+      hitButton.disabled = "disabled";
+      standButton.disabled = "disabled";
+
+      // Show the dealer's second card (useful if bust after a hit)
+      var dealerCard = document.getElementById("dealer").getElementsByClassName("card")[1];
+      dealerCard.id = dealer.cards[1].name;
+      setBackgroundImage(dealerCard, dealer.cards[1].name);
+    }
+
+    game.shuffleCards();
     runGame();
 
   </script>
