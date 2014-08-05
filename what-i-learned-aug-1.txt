@@ -1,0 +1,26 @@
+:) What I learned this week:
+
+  Javascript:
+    DOM manipulation
+    adding event listeners
+    working with arrays and objects
+    structuring a program
+    prototype and pseudo-classes
+
+:| What I thought I would learn, but didn't:
+    design patterns in JS
+
+:( What I struggled with:
+    program structure
+      what goes where?
+      separate logic and view?
+    attempting to implement TDD
+      what to test?
+      do I test the view as well? (integration / E2E)
+    motivation
+      blackjack isn't all that interesting
+
+∆ What will I change for next week?
+  • Do a public code review to get input on structure
+  • take what I've learned, start a more interesting project (motivation)
+  •
