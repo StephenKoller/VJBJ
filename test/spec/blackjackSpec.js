@@ -42,8 +42,4 @@ describe("Game", function() {
     });
   });
 
-  // it("should ", function(){
-  //
-  // });
-
 });

@@ -12,20 +12,20 @@
 
     <div class="row">
       <div class="col-md-4 col-md-offset-4 col-xs-6">
-        <h3>Dealer&nbsp;<span id="dealerHandValue"></span></h3>
+        <h3>Dealer&nbsp;<span id="dealerScore"></span></h3>
         <div id="dealer">
           <div id="empty" class="card"></div>
           <div id="hiddenCard" class="card"></div>
         </div>
       </div>
       <div class="col-md-4 col-xs-6">
-        <h2 id="playerMoneyAmount"></h2>
+        <h2 id="playerMoney"></h2>
       </div>
     </div>
     <br>
     <div class="row">
       <div class="col-md-4 col-md-offset-4 col-xs-6">
-        <h3>Player&nbsp;<span id="playerHandValue"></span></h3>
+        <h3>Player&nbsp;<span id="playerScore"></span></h3>
         <div id="player">
           <div id="empty" class="card"></div>
           <div id="empty" class="card"></div>
@@ -59,267 +59,30 @@
     </div>
   </div>
 
-  <script type="text/javascript" src="../js/blackjack.js"></script>
+  <script type="text/javascript" src="../js/game.js"></script>
+  <script type="text/javascript" src="../js/player.js"></script>
+  <script type="text/javascript" src="../js/gameUI.js"></script>
+  <script type="text/javascript" src="../js/jquery-1.4.4.min.js"></script>
   <script type="text/javascript">
-    // I kept this out of the blackjack.js file to separate the view from the controller,
-    // and to make testing easier (?)
+    // Need to encapsulate the scope, get these vars out of global namespace
 
-    var game = new Game();
-    var player = new Player("player");
-    var dealer = new Player("dealer");
+    (function Blackjack() {
+      var game = new Game();
+      var player = new Player("player");
+      var dealer = new Player("dealer");
+      var gameUI = new GameUI(game, player, dealer);
+      game.gameUI = gameUI;
+      game.player = player;
+      game.dealer = dealer;
 
-    var playerCardsOnScreen = document.getElementById("player");
-    var dealerCardsOnScreen = document.getElementById("dealer");
-    var gameStatus = document.getElementById("gameStatus");
-    var betAmount = document.getElementById("betAmount");
-    var playerMoneyAmount = document.getElementById("playerMoneyAmount");
+      gameUI.setEventListeners(game, player, dealer);
+      // TODO:Be more specific with this function name
+      gameUI.disableBetting();
+      gameUI.disableHitStand();
+      gameUI.disableDeal();
 
-    /*Set up event listeners for buttons*/
-    var hitButton = document.getElementById("hitButton");
-    var standButton = document.getElementById("standButton");
-    var dealButton = document.getElementById("dealButton");
-    var newGameButton = document.getElementById("newGameButton");
-    var bet1 = document.getElementById("bet1");
-    var bet5 = document.getElementById("bet5");
-    var bet10 = document.getElementById("bet10");
-    var bet25 = document.getElementById("bet25");
-    var bet100 = document.getElementById("bet100");
-
-    hitButton.addEventListener('click', function() {
-      hitMe();
-    }, false);
-
-    standButton.addEventListener('click', function() {
-      stand();
-    }, false);
-
-    dealButton.addEventListener('click', function() {
-      deal();
-    }, false);
-
-    newGameButton.addEventListener('click', function() {
-      game = new Game();
-      game.shuffleCards();
-      newGameButton.disabled = "disabled";
-      // enable betting
-      bet1.disabled = "";
-      bet5.disabled = "";
-      bet10.disabled = "";
-      bet25.disabled = "";
-      bet100.disabled = "";
-      initGame();
-    }, false);
-
-    bet1.addEventListener('click', function() {
-      bet(1);
-    }, false);
-
-    bet5.addEventListener('click', function() {
-      bet(5);
-    }, false);
-
-    bet10.addEventListener('click', function() {
-      bet(10);
-    }, false);
-
-    bet25.addEventListener('click', function() {
-      bet(25);
-    }, false);
-
-    bet100.addEventListener('click', function() {
-      bet(100);
-    }, false);
-
-    function deal(){
-      // disable betting, dealing
-      bet1.disabled = "disabled";
-      bet5.disabled = "disabled";
-      bet10.disabled = "disabled";
-      bet25.disabled = "disabled";
-      bet100.disabled = "disabled";
-      dealButton.disabled = "disabled";
-
-      // enable hit/stand
-      hitButton.disabled = "";
-      standButton.disabled = "";
-
-      // Deal 2 cards to each player
-      game.dealCard(player,2);
-      game.dealCard(dealer,2);
-
-      // Update DOM to match dealt cards
-      for(var i in player.cards){
-        var card = player.cards[i];
-        var cardBox = playerCardsOnScreen.getElementsByTagName("div")[i];
-        cardBox.id = card.name;
-        setBackgroundImage(cardBox, card.name);
-      }
-
-      var dealerCard = document.getElementById("dealer").getElementsByClassName("card")[0];
-      dealerCard.id = dealer.cards[0].name;
-      setBackgroundImage(dealerCard, dealer.cards[0].name);
-
-      // Update display for score of cards currently held by player
-      game.calculateScore(player);
-      updateHandValue(player);
-
-      // Allow card images to render, then check if the player has already reached 21
-      setTimeout(function(){
-        initialScore();
-      }, 200);
-    }
-
-    // Game functions that should maybe (?) go in the other file.
-    function initGame(){
-      // Reset players' hands in DOM to empty
-      playerCardsOnScreen.innerHTML = "<div id='empty' class='card'></div><div id='empty' class='card'></div>";
-      dealerCardsOnScreen.innerHTML = "<div id='empty' class='card'></div><div id='hiddenCard' class='card'></div>";
-
-      // Reset the players' hands
-      player.cards = [];
-      dealer.cards = [];
-
-      document.getElementById("playerHandValue").innerHTML = "";
-      document.getElementById("dealerHandValue").innerHTML = "";
-
-      gameStatus.innerHTML = "";
-      betAmount.innerHTML = "0";
-      playerMoneyAmount.innerHTML = player.money;
-
-      // disable buttons
-      hitButton.disabled = "disabled";
-      standButton.disabled = "disabled";
-      dealButton.disabled = "disabled";
-    }
-
-    function bet(amount){
-      game.addBet(amount);
-      betAmount.innerHTML = game.bet;
-      playerMoneyAmount.innerHTML = player.money;
-
-      // enable buttons
-      dealButton.disabled = "";
-    }
-
-    // When player presses "Hit Me" button...
-    function hitMe(){
-      game.dealCard(player, 1);
-
-      // Create a new DOM element
-      var newCard = document.createElement("div");
-
-      // Find the name of the new card that has been dealt and add it to the DOM element
-      var card = player.cards[player.cards.length-1];
-      newCard.id = card.name;
-
-      // Set the styling
-      newCard.className = "card";
-      setBackgroundImage(newCard, card.name);
-
-      // Add new element to the DOM
-      playerCardsOnScreen.appendChild(newCard);
-
-      game.calculateScore(player);
-      updateHandValue(player);
-
-      // Use a timeout to let the card images render before checking score
-      setTimeout(function(){
-        initialScore();
-      }, 100);
-    }
-
-    function stand(){
-      // First show the second card the dealer already has in their hand
-      var dealerCardsOnScreen = document.getElementById("dealer");
-
-      var dealerCard = dealerCardsOnScreen.getElementsByClassName("card")[1];
-      dealerCard.id = dealer.cards[1].name;
-      setBackgroundImage(dealerCard, dealer.cards[1].name);
-
-      // Then while the dealer's score is less than 17, keep dealing cards and displaying them
-      var i = 2;
-      while(game.calculateScore(dealer) < 17){
-        game.dealCard(dealer,1);
-        var newCard = document.createElement("div");
-        newCard.id = dealer.cards[i].name;
-        newCard.className = "card";
-        setBackgroundImage(newCard, dealer.cards[i].name);
-        dealerCardsOnScreen.appendChild(newCard);
-        i++;
-      }
-
-      updateHandValue(dealer);
-
-      finalScore();
-    }
-
-    function finalScore(){
-      if(game.calculateScore(dealer) > 21){
-        gameStatus.innerHTML = "You win, dealer busts!";
-        player.money += game.bet*2;
-      } else if (game.calculateScore(dealer) === 21 ){
-        gameStatus.innerHTML = "Dealer wins!";
-        player.money -= game.bet;
-      } else if(game.calculateScore(player) === 21){
-        gameStatus.innerHTML = "21, you win!";
-        player.money += game.bet*2;
-      } else if (game.calculateScore(player) > game.calculateScore(dealer)){
-        gameStatus.innerHTML = "You win!";
-        player.money += game.bet*2;
-      } else if (game.calculateScore(player) <= game.calculateScore(dealer)){
-        gameStatus.innerHTML = "You lose!";
-        player.money -= game.bet;
-      }
-
-      playerMoneyAmount.innerHTML = player.money;
-      betAmount.innerHTML = "0";
-
-      endGame();
-    }
-
-    function initialScore(){
-      if(game.calculateScore(player) > 21){
-        gameStatus.innerHTML = "Busted! You're over 21!";
-        playerMoneyAmount.innerHTML = player.money;
-        endGame();
-      }
-
-      if(game.calculateScore(dealer) > 21){
-        gameStatus.innerHTML = "Dealer loses! You win!";
-        endGame();
-      }
-
-    };
-
-    function setBackgroundImage(cardElement, cardName){
-      cardElement.style.backgroundImage = "url(../img/cards/" + cardName + ".png)";
-    }
-
-    function updateHandValue(player){
-      var hand = document.getElementById(player.name + "HandValue");
-      hand.innerHTML = game.calculateScore(player);
-    }
-
-    function endGame(){
-      // Disable buttons
-      hitButton.disabled = "disabled";
-      standButton.disabled = "disabled";
-      dealButton.disabled = "disabled";
-
-      // Enable new game button
-      newGameButton.disabled = "";
-
-      // Reset bet amount
-      betAmount.innerHTML = "0";
-
-      // Show the dealer's second card (useful if bust after a hit)
-      var dealerCard = document.getElementById("dealer").getElementsByClassName("card")[1];
-      dealerCard.id = dealer.cards[1].name;
-      setBackgroundImage(dealerCard, dealer.cards[1].name);
-    }
-
-    game.shuffleCards();
-    initGame();
+      // ...aaaaand wait for user interaction. Short and sweet.
+    })();
 
   </script>
 
