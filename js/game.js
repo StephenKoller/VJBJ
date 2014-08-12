@@ -85,23 +85,28 @@ Game.prototype.dealCard = function(player, count){
 }
 
 Game.prototype.checkFinalScore = function(){
-  if(this.dealer.calculateScore() > 21){
+
+  if(this.dealer.calculateScore() > 21)
+  {
     this.gameUI.displayMessage("You win, dealer busts!");
     this.player.money += this.pot*2;
-  } else if (this.dealer.calculateScore() === 21 ){
-    this.gameUI.displayMessage("Dealer wins!");
-    this.player.money -= this.pot;
+  } else if (this.dealer.calculateScore() === 21 )
+  {
+      this.gameUI.displayMessage("Dealer wins!");
+      this.player.money -= this.pot;
     // game passes message to player (you lose!), make player give money to dealer
-  } else if(this.player.calculateScore() === 21){
-    this.gameUI.displayMessage("21, you win!");
-    this.player.money += this.pot*2;
-  } else if (this.player.calculateScore() > this.dealer.calculateScore()){
+  } else if(this.player.calculateScore() === 21) {
+      this.gameUI.displayMessage("21, you win!");
+      this.player.money += this.pot*2;
+  } else if (this.player.calculateScore() > this.dealer.calculateScore())
+  {
     this.gameUI.displayMessage("You win!");
     this.player.money += this.pot*2;
-  } else if (this.player.calculateScore() <= this.dealer.calculateScore()){
+  } else if (this.player.calculateScore() <= this.dealer.calculateScore())
+  {
     this.gameUI.displayMessage("You lose!");
     this.player.money -= this.pot;
-  }
+    }
 
   this.pot = 0;
   this.gameUI.updateMoney();
