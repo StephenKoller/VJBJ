@@ -176,15 +176,13 @@ GameUI.prototype = {
   showCards: function(){
     // Update DOM to match dealt cards
     // may need to rewrite this...
-    for(var i in this.player.cards){
+    for(var i = 0; i<this.player.cards.length; i++){
       var card = this.player.cards[i];
       var cardBox = this.playerCardsOnScreen.getElementsByTagName("div")[i];
       this.setBackgroundImage(cardBox, card.name);
     }
   },
   setEventListeners: function(game, player, dealer){
-    // moving event listeners to GameUI object
-
     var gameUI = this;
 
     hitButton.addEventListener('click', function() {

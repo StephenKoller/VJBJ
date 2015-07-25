@@ -31,7 +31,7 @@ Player.prototype.calculateScore = function(){
     var aceCount = 0;
     this.totalScore = 0;
 
-    for(card in this.cards){
+    for(var card = 0; card < this.cards.length; card++){
       if(this.cards[card].name.substring(0,1) === "A" && aceCount === 0){
         // set the ace's value to 1
         this.cards[card].value = 1;
