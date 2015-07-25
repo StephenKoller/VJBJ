@@ -26,8 +26,8 @@ Player.prototype.calculateScore = function(){
 
   // TODO(?): account for possible 3 ace situation
 
-  // if total > 21 (maximum_score)
-  if(this.totalScore > MAXIMUM_SCORE){
+  // if total > 21
+  if(this.totalScore > 21){
     var aceCount = 0;
     this.totalScore = 0;
 
