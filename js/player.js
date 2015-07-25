@@ -9,18 +9,18 @@ function Player(name){
 Player.prototype.bet = function(game, amount){
   this.money -= amount;
   game.addBet(amount);
-}
+};
 
 Player.prototype.dealCard = function(card){
   this.cards.push(card);
-}
+};
 
 Player.prototype.calculateScore = function(){
   // Reset the score to count again
   this.totalScore = 0;
 
   // Add the value of each card in the player's hand
-  for(card in this.cards){
+  for(var card = 0; card < this.cards.length; card++){
     this.totalScore += this.cards[card].value;
   }
 
@@ -42,4 +42,4 @@ Player.prototype.calculateScore = function(){
   }
 
   return this.totalScore;
-}
+};

@@ -171,7 +171,6 @@ GameUI.prototype = {
     bet100.disabled = "disabled";
   },
   showFirstDealerCard: function(dealer){
-    debugger;
     this.setBackgroundImage(this.dealerCard, dealer.cards[0].name);
   },
   showCards: function(){
@@ -233,4 +232,4 @@ GameUI.prototype = {
       addBet(100);
     }, false);
   }
-}
+};

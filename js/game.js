@@ -7,7 +7,6 @@ function Game(){
     // Found this nice Fisher-Yates shuffle algorithm at
     // http://bost.ocks.org/mike/shuffle/
 
-
     // Using this.deck everywhere is discouraged for testing and encapsulation
     // var deck = this.deck;
     var unshuffled = this.deck.length,
@@ -25,11 +24,12 @@ function Game(){
       this.deck[unshuffled] = this.deck[randomCard];
       this.deck[randomCard] = currentCard;
     }
-  }
+  };
 }
 
 Game.prototype.createDeck = function(){
   // Set up the card deck
+  var cardVal;
   var values = ["A", "2", "3", "4", "5", "6", "7",
                 "8", "9", "10", "J", "Q", "K"];
   var suits = ["S", "H", "C", "D"];
@@ -37,12 +37,13 @@ Game.prototype.createDeck = function(){
 
   // The Math.min function here sets everything 10 or greater to just
   // 10, ensuring face cards always have a value of 10.
-  for(suit in suits){
-    for(value in values){
+
+  for(var suit = 0; suit<suits.length; suit++){
+    for(var value = 0; value<values.length; value++){
       if(values[value].substring(0,1) === "A"){
-        var cardVal = 11;
+        cardVal = 11;
       } else {
-        var cardVal = Math.min(10, parseInt(value)+1);
+        cardVal = Math.min(10, parseInt(value)+1);
       }
       var tmpCard = {
           "name" : values[value] + suits[suit],
@@ -52,7 +53,7 @@ Game.prototype.createDeck = function(){
     }
   }
   return deck;
-}
+};
 
 Game.prototype.startNewGame = function(){
   this.shuffleCards();
@@ -63,7 +64,7 @@ Game.prototype.startNewGame = function(){
 
   this.gameUI.enableBetting();
   this.gameUI.disableNewGame();
-}
+};
 
 
 Game.prototype.firstDeal = function(player, dealer){
@@ -75,14 +76,14 @@ Game.prototype.firstDeal = function(player, dealer){
 
     this.gameUI.showFirstDealerCard(dealer);
     this.gameUI.updatePlayerScore();
-}
+};
 
 Game.prototype.dealCard = function(player, count){
   for(var i = 0; i < count; i++){
     var card = this.deck.pop();
     player.dealCard(card);
   }
-}
+};
 
 Game.prototype.checkFinalScore = function(){
 
@@ -112,12 +113,12 @@ Game.prototype.checkFinalScore = function(){
   this.gameUI.updateMoney();
   this.gameUI.disableHitStand();
   this.gameUI.enableNewGame();
-}
+};
 
 Game.prototype.addBet = function(amount){
   this.pot += amount;
   this.gameUI.enableDeal();
-}
+};
 
 Game.prototype.checkFor21 = function(player){
   if(player.calculateScore() > 21){
@@ -131,4 +132,4 @@ Game.prototype.checkFor21 = function(player){
     this.gameUI.displayMessage("Dealer loses! You win!");
     this.gameUI.updateMoney();
   }
-}
+};
