@@ -38,15 +38,15 @@ Game.prototype.createDeck = function(){
   // The Math.min function here sets everything 10 or greater to just
   // 10, ensuring face cards always have a value of 10.
 
-  for(var suit = 0; suit<suits.length; suit++){
-    for(var value = 0; value<values.length; value++){
-      if(values[value].substring(0,1) === "A"){
+  for(var i = 0; i < suits.length; i++){
+    for(var j = 0; j < values.length; j++){
+      if(values[j].substring(0,1) === "A"){
         cardVal = 11;
       } else {
-        cardVal = Math.min(10, parseInt(value)+1);
+        cardVal = Math.min(10, parseInt(j)+1);
       }
       var tmpCard = {
-          "name" : values[value] + suits[suit],
+          "name" : values[j] + suits[i],
           "value" : cardVal
         };
       deck.push(tmpCard);
