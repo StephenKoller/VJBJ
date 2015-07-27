@@ -31,8 +31,8 @@ function GameUI(game, player, dealer){
   this.playerMoney = document.getElementById("playerMoney");
 
   // Player & dealer score elements
-  this.playerScore = document.getElementById("playerScore");
-  this.dealerScore = document.getElementById("dealerScore");
+  this.playerScoreText = document.getElementById("playerScore");
+  this.dealerScoreText = document.getElementById("dealerScore");
 }
 
 GameUI.prototype = {
@@ -43,8 +43,8 @@ GameUI.prototype = {
     this.dealerCardsOnScreen.innerHTML = "<div id='empty' class='card'></div><div id='hiddenCard' class='card'></div>";
 
     // playerCardsUI.reset();
-    this.playerScore.innerHTML = "";
-    this.dealerScore.innerHTML = "";
+    this.playerScoreText.innerHTML = "";
+    this.dealerScoreText.innerHTML = "";
 
     // gameStatus.reset();
     gameStatus.innerHTML = "";
@@ -127,11 +127,11 @@ GameUI.prototype = {
   },
   updatePlayerScore: function(){
     // Update display for score of cards currently held by player
-    this.playerScore.innerHTML = this.player.calculateScore();
+    this.playerScoreText.innerHTML = this.player.calculateScore();
   },
   updateDealerScore: function(){
     // Update display for score of cards currently held by dealer
-    this.dealerScore.innerHTML = this.dealer.calculateScore();
+    this.dealerScoreText.innerHTML = this.dealer.calculateScore();
   },
   enableNewGame: function(){
     newGameButton.disabled = "";
