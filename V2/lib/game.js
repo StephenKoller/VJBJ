@@ -13,8 +13,6 @@ var Game = function () {
   }
 
   // this is classified as a "command" - it doesn't return info like a query, just does stuff
-
-
   _createClass(Game, [{
     key: "shuffleCards",
     value: function shuffleCards() {

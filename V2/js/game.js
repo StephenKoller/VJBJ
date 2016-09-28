@@ -1,7 +1,60 @@
 class Game {
   constructor() {
-    this.deck = this.createDeck();
     this.pot = 0;
+    this.deck = [
+      { name: "AS", value: 11 },
+      { name: "2S", value: 2 },
+      { name: "3S", value: 3 },
+      { name: "4S", value: 4 },
+      { name: "5S", value: 5 },
+      { name: "6S", value: 6 },
+      { name: "7S", value: 7 },
+      { name: "8S", value: 8 },
+      { name: "9S", value: 9 },
+      { name: "10S", value: 10 },
+      { name: "JS", value: 10 },
+      { name: "QS", value: 10 },
+      { name: "KS", value: 10 },
+      { name: "AH", value: 11 },
+      { name: "2H", value: 2 },
+      { name: "3H", value: 3 },
+      { name: "4H", value: 4 },
+      { name: "5H", value: 5 },
+      { name: "6H", value: 6 },
+      { name: "7H", value: 7 },
+      { name: "8H", value: 8 },
+      { name: "9H", value: 9 },
+      { name: "10H", value: 10 },
+      { name: "JH", value: 10 },
+      { name: "QH", value: 10 },
+      { name: "KH", value: 10 },
+      { name: "AD", value: 11 },
+      { name: "2D", value: 2 },
+      { name: "3D", value: 3 },
+      { name: "4D", value: 4 },
+      { name: "5D", value: 5 },
+      { name: "6D", value: 6 },
+      { name: "7D", value: 7 },
+      { name: "8D", value: 8 },
+      { name: "9D", value: 9 },
+      { name: "10D", value: 10 },
+      { name: "JD", value: 10 },
+      { name: "QD", value: 10 },
+      { name: "KD", value: 10 },
+      { name: "AC", value: 11 },
+      { name: "2C", value: 2 },
+      { name: "3C", value: 3 },
+      { name: "4C", value: 4 },
+      { name: "5C", value: 5 },
+      { name: "6C", value: 6 },
+      { name: "7C", value: 7 },
+      { name: "8C", value: 8 },
+      { name: "9C", value: 9 },
+      { name: "10C", value: 10 },
+      { name: "JC", value: 10 },
+      { name: "QC", value: 10 },
+      { name: "KC", value: 10 }
+    ] 
   }
 
   // this is classified as a "command" - it doesn't return info like a query, just does stuff
@@ -28,39 +81,12 @@ class Game {
     }
   }
 
-  createDeck() {
-    // Set up the card deck
-    var cardVal;
-    var values = ["A", "2", "3", "4", "5", "6", "7",
-      "8", "9", "10", "J", "Q", "K"];
-    var suits = ["S", "H", "C", "D"];
-    var deck = [];
-
-    // The Math.min function here sets everything 10 or greater to just
-    // 10, ensuring face cards always have a value of 10.
-    for (var i = 0, j = suits.length; i < j; i++) {
-      for (var k = 0, l = values.length; k < l; k++) {
-        if (values[k].substring(0, 1) === "A") {
-          cardVal = 11;
-        } else {
-          cardVal = Math.min(10, parseInt(j) + 1);
-        }
-        var tmpCard = {
-          "name": values[k] + suits[i],
-          "value": cardVal
-        };
-        deck.push(tmpCard);
-      }
-    }
-    return deck;
-  }
-
   startNewGame() {
-    this.shuffleCards();
+    shuffleCards();
 
     // Reset the players' hands
-    this.player.cards = [];
-    this.dealer.cards = [];
+    this.player.emptyHand();
+    this.dealer.emptyHand();
 
     this.gameUI.enableBetting();
     this.gameUI.disableNewGame();

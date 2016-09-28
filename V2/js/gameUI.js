@@ -1,5 +1,4 @@
 class GameUI {
-
     constructor(game, player, dealer) {
         // Dependency injection(?)
         this.game = game;
@@ -223,7 +222,8 @@ class GameUI {
         }, false);
 
         function  _addBet(amount) {
-            player.bet(game, amount);
+            player.bet(amount);
+            game.addBet(amount);
             gameUI.updateMoney();
             gameUI.enableDeal();
         }

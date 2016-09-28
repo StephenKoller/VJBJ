@@ -7,14 +7,18 @@ class Player {
         this.name = name;
     }
 
-    bet(game, amount) {
+    bet(amount) {
         this.money -= amount;
-        game.addBet(amount);
+        return this.money;
     }
 
     dealCard(card) {
         this.cards.push(card);
     };
+
+    emptyHand() {
+        this.cards = [];
+    }
 
     calculateScore() {
         // Reset the score to count again
